@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e2f;
+            color: #f4f4f9;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+        }
+
+        h1 {
+            width: 100%;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2.5rem;
+            color: #00d1ff;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            height: auto;
+            flex-wrap: nowrap;
+        }
+
+        .form-section, .qr-section {
+            width: 50%;
+            box-sizing: border-box;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-section {
+            border-right: 2px solid #2a2a3b;
+        }
+
+        form {
+            background-color: #2a2a3b;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            font-size: 1rem;
+            margin: 10px 0 5px;
+        }
+
+        select, input, button {
+            width: 100%;
+            margin: 5px 0 15px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        select, input {
+            background-color: #3c3c4f;
+            color: #f4f4f9;
+        }
+
+        button {
+            background-color: #00d1ff;
+            color: #1e1e2f;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #008bbd;
+        }
+
+        #qr-result {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        img {
+            margin: 20px 0;
+            max-width: 90%;
+            max-height: 60%;
+            border: 4px solid #00d1ff;
+            border-radius: 10px;
+        }
+
+        #download-btn {
+            display: none;
+            background-color: #28a745;
+            color: #ffffff;
+        }
+
+        #download-btn:hover {
+            background-color: #218838;
+        }
+
+        footer {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: #2a2a3b;
+            font-size: 0.9rem;
+            color: #707085;
+        }
+
+        footer a {
+            color: #00d1ff;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .dynamic-field {
+            display: none;
+        }
+
+        .password-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #f4f4f9;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>QR Code Generator</h1>
+    <div class="container">
+        <div class="form-section">
+            <form id="qr-form">
+                <label for="type">QR Code Type:</label>
+                <select id="type" name="type" required>
+                    <option value="text">Text</option>
+                    <option value="https">HTTPS/URL</option>
+                    <option value="wifi">Wi-Fi</option>
+                    <option value="mecard">MeCard</option>
+                </select>
+                
+                <div id="text-url-input">
+                    <label for="content">Content:</label>
+                    <input type="text" id="content" name="content" placeholder="Enter text or URL" required>
+                </div>
+
+                <!-- Wi-Fi Section -->
+                <div id="wifi-fields" class="dynamic-field">
+                    <label for="ssid">SSID:</label>
+                    <input type="text" id="ssid" name="ssid" placeholder="Wi-Fi Network Name">
+                    
+                    <label for="password">Password:</label>
+                    <div class="password-container">
+                        <button type="button" class="toggle-password" data-target="password">👁</button>
+                        <input type="password" id="password" name="password" placeholder="Wi-Fi Password">
+                    </div>
+                </div>
+
+                <!-- MeCard Section -->
+                <div id="mecard-fields" class="dynamic-field" style="display: none;">
+                    <label for="first-name">First Name:</label>
+                    <input type="text" id="first-name" name="first-name" required>
+                    
+                    <label for="last-name">Last Name:</label>
+                    <input type="text" id="last-name" name="last-name">
+                    
+                    <label for="phone">Phone:</label>
+                    <input type="text" id="phone" name="phone">
+                    
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email">
+                    
+                    <label for="city">City:</label>
+                    <input type="text" id="city" name="city">
+                    
+                    <label for="country">Country:</label>
+                    <input type="text" id="country" name="country">
+                </div>
+
+                <button type="submit">Generate</button>
+            </form>
+        </div>
+        
+        <div class="qr-section">
+            <div id="qr-result">
+                <h2>Generated QR Code:</h2>
+                <img id="qr-image" alt="QR Code will appear here">
+                <button id="download-btn">Download PNG</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .password-container {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .password-container input {
+            border: none;
+            flex: 1;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .password-container button {
+            border: none;
+            background: #ddd;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .password-container button:hover {
+            background: #bbb;
+        }
+    </style>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script>
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function () {
+            const target = document.getElementById(this.dataset.target);
+            target.type = target.type === 'password' ? 'text' : 'password';
+        });
+    });
+
+    document.getElementById('type').addEventListener('change', function () {
+        const type = this.value;
+        document.getElementById('wifi-fields').style.display = type === 'wifi' ? 'block' : 'none';
+        document.getElementById('mecard-fields').style.display = type === 'mecard' ? 'block' : 'none';
+        document.getElementById('text-url-input').style.display = type === 'text' || type === 'https' ? 'block' : 'none';
+    });
+
+    document.getElementById('qr-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const type = document.getElementById('type').value;
+        let qrData = '';
+
+        if (type === 'wifi') {
+            const ssid = document.getElementById('ssid').value;
+            const password = document.getElementById('password').value;
+            qrData = `WIFI:S:${ssid};T:WPA;P:${password};;`;
+        } else if (type === 'mecard') {
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const city = document.getElementById('city').value;
+            const country = document.getElementById('country').value;
+            qrData = `MECARD:N:${firstName},${lastName};TEL:${phone};EMAIL:${email};ADR:${city},${country};;`;
+        } else {
+            qrData = document.getElementById('content').value;
+        }
+
+        // Generate QR Code
+        const qrCodeElement = document.getElementById('qr-image');
+        QRCode.toDataURL(qrData, { width: 300 }, function (error, url) {
+            if (error) {
+                console.error(error);
+                return;
+            }
+            qrCodeElement.src = url;
+            document.getElementById('download-btn').style.display = 'block';
+            document.getElementById('download-btn').href = url;
+        });
+    });
+</script>
+
+</body>
+
+</html>
